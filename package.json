@@ -1,0 +1,14 @@
+{
+    "name": "node-rest-server",
+    "version": "1.0.0",
+    "description": "Rest server done in node",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Ramon Morcillo",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.16.4"
+    }
+}
