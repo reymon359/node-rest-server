@@ -8,7 +8,25 @@ const app = express();
 
 
 app.get('/user', function(req, res) {
-    res.json('get user');
+    let from = req.query.from || 0;
+    from = Number(from);
+    let limit = req.query.limit || 5;
+    limit = Number(limit);
+    User.find({})
+        .skip(from)
+        .limit(limit)
+        .exec((err, users) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                });
+            }
+            res.json({
+                ok: true,
+                users
+            });
+        });
 })
 app.post('/user', function(req, res) {
     let body = req.body;
