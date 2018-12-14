@@ -13,7 +13,7 @@ app.get('/user', function(req, res) {
     let limit = req.query.limit || 5;
     limit = Number(limit);
     // In the string after we can choose with fields return
-    User.find({}, 'name email img role status google')
+    User.find({ status: true }, 'name email img role status google')
         .skip(from)
         .limit(limit)
         .exec((err, users) => {
@@ -24,7 +24,7 @@ app.get('/user', function(req, res) {
                 });
             }
             // The count condition must be the same as the find({})
-            User.count({}, (err, quantity) => {
+            User.count({ status: true }, (err, quantity) => {
                 res.json({
                     ok: true,
                     users,
@@ -80,7 +80,13 @@ app.put('/user/:id', function(req, res) {
 });
 app.delete('/user/:id', function(req, res) {
     let id = req.params.id;
-    User.findByIdAndRemove(id, (err, userDeleted) => {
+    // This way the user is deleted from DB
+    // User.findByIdAndRemove(id, (err, userDeleted) => {
+    // This way it just changes it status
+    let statusChange = {
+        status: false
+    };
+    User.findByIdAndUpdate(id, statusChange, { new: true }, (err, userDeleted) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
