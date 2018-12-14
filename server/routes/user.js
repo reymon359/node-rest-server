@@ -1,5 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const _ = require('underscore');
+
 const User = require('../models/user');
 const app = express();
 
@@ -33,9 +35,12 @@ app.post('/user', function(req, res) {
 })
 app.put('/user/:id', function(req, res) {
     let id = req.params.id;
-    let body = req.body;
-
-    User.findByIdAndUpdate(id, body, { new: true }, (err, userDB) => {
+    let body = _.pick(req.body, ['name', 'email', 'img', 'role', 'status']);
+    // This is a way to not update certain properties
+    // But we used underscore .pick instead 
+    // delete body.password;
+    // delete body.google;
+    User.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, userDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
