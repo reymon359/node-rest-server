@@ -12,7 +12,8 @@ app.get('/user', function(req, res) {
     from = Number(from);
     let limit = req.query.limit || 5;
     limit = Number(limit);
-    User.find({})
+    // In the string after we can choose with fields return
+    User.find({}, 'name email img role status google')
         .skip(from)
         .limit(limit)
         .exec((err, users) => {
@@ -77,8 +78,28 @@ app.put('/user/:id', function(req, res) {
 
     });
 });
-app.delete('/user', function(req, res) {
-    res.json('delete user')
+app.delete('/user/:id', function(req, res) {
+    let id = req.params.id;
+    User.findByIdAndRemove(id, (err, userDeleted) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        }
+        if (!userDeleted) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'User not found'
+                }
+            });
+        }
+        res.json({
+            ok: true,
+            user: userDeleted
+        });
+    });
 });
 
 module.exports = app;
