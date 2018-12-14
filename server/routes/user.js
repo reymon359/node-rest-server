@@ -22,10 +22,15 @@ app.get('/user', function(req, res) {
                     err
                 });
             }
-            res.json({
-                ok: true,
-                users
+            // The count condition must be the same as the find({})
+            User.count({}, (err, quantity) => {
+                res.json({
+                    ok: true,
+                    users,
+                    quantity
+                });
             });
+
         });
 })
 app.post('/user', function(req, res) {
