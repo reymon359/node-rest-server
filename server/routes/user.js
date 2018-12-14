@@ -1,11 +1,12 @@
 const express = require('express');
-const User = require('../models/user')
+const bcrypt = require('bcrypt');
+const User = require('../models/user');
 const app = express();
 
 
 
 app.get('/user', function(req, res) {
-    res.json('get user')
+    res.json('get user');
 })
 app.post('/user', function(req, res) {
     let body = req.body;
@@ -13,7 +14,7 @@ app.post('/user', function(req, res) {
     let user = new User({
         name: body.name,
         email: body.email,
-        password: body.password,
+        password: bcrypt.hashSync(body.password, 10),
         role: body.role
     });
     // Now we save it in to the bbdd
