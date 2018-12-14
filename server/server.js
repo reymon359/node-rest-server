@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(require('./routes/user'));
 
 // Connecting with the database
-mongoose.connect('mongodb://localhost:27017/coffee', (err, res) => {
+mongoose.connect(process.env.URLDB, (err, res) => {
     if (err) throw err;
     console.log('Data base ONLINE');
 });
