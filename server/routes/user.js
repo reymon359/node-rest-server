@@ -36,7 +36,7 @@ app.get('/user', verificateToken, (req, res) => {
 
         });
 })
-app.post('/user', function(req, res) {
+app.post('/user', verificateToken, function(req, res) {
     let body = req.body;
     // Here we create a new user with the params given in the request body
     let user = new User({
@@ -59,7 +59,7 @@ app.post('/user', function(req, res) {
         });
     });
 })
-app.put('/user/:id', function(req, res) {
+app.put('/user/:id', verificateToken, function(req, res) {
     let id = req.params.id;
     let body = _.pick(req.body, ['name', 'email', 'img', 'role', 'status']);
     // This is a way to not update certain properties
@@ -80,7 +80,7 @@ app.put('/user/:id', function(req, res) {
 
     });
 });
-app.delete('/user/:id', function(req, res) {
+app.delete('/user/:id', verificateToken, function(req, res) {
     let id = req.params.id;
     // This way the user is deleted from DB
     // User.findByIdAndRemove(id, (err, userDeleted) => {

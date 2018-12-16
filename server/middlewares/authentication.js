@@ -13,7 +13,9 @@ let verificateToken = (req, res, next) => { // next to continue program executio
         if (err) {
             return res.status(401).json({
                 ok: false,
-                err
+                err: {
+                    message: 'Token not valid'
+                }
             });
         }
         req.user = decoded.user;
