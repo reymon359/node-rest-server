@@ -21,14 +21,29 @@ let verificateToken = (req, res, next) => { // next to continue program executio
         req.user = decoded.user;
         next();
     });
-
-
 };
 
 
+// ============================
+//  Admin Role verification
+// ============================
+let verificateAdmin_Role = (req, res, next) => { // next to continue program execution
 
+    let user = req.user;
+    if (user.role === 'ADMIN_ROLE') {
+        next();
+    } else {
+        return res.json({
+            ok: false,
+            err: {
+                message: 'The user is not an admin'
+            }
+        });
+    }
+};
 
 
 module.exports = {
-    verificateToken
+    verificateToken,
+    verificateAdmin_Role
 }
