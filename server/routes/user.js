@@ -3,11 +3,13 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore');
 
 const User = require('../models/user');
+const { verificateToken } = require('../middlewares/authentication')
+
 const app = express();
 
 
 
-app.get('/user', function(req, res) {
+app.get('/user', verificateToken, (req, res) => {
     let from = req.query.from || 0;
     from = Number(from);
     let limit = req.query.limit || 5;
