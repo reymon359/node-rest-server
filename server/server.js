@@ -12,7 +12,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Enable public folder using a middleware
-console.log(path.resolve(__dirname, '../public'));
 app.use(express.static(path.resolve(__dirname, '../public')));
 
 // Routes global config
