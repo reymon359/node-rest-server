@@ -60,15 +60,31 @@ async function verify(token) {
     });
     const payload = ticket.getPayload();
     console.log(payload);
+
+    return {
+        name: payload.name,
+        email: payload.email,
+        img: payload.picture,
+        google: true
+    }
 }
+verify().catch(console.error);
 
-app.post('/google', (req, res) => {
+app.post('/google', async(req, res) => {
+
     let token = req.body.idtoken;
+    console.log(token);
 
-    verify(token);
+    let googleUser = await verify(token)
+        .catch(e => {
+            res.status(403).json({
+                ok: false,
+                err: e
+            });
+        });
 
     res.json({
-        token
+        user: googleUser
     });
 
 });
