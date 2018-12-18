@@ -59,8 +59,6 @@ async function verify(token) {
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
     });
     const payload = ticket.getPayload();
-    console.log(payload);
-
     return {
         name: payload.name,
         email: payload.email,
@@ -73,7 +71,6 @@ verify().catch(console.error);
 app.post('/google', async(req, res) => {
 
     let token = req.body.idtoken;
-    console.log(token);
 
     let googleUser = await verify(token)
         .catch(e => {
@@ -82,10 +79,64 @@ app.post('/google', async(req, res) => {
                 err: e
             });
         });
+    // After getting the User verified by google we save it in our dataBase 
+    User.findOne({ email: googleUser.email }, (err, userDB) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            });
+        }
+        // If the user already exists
+        if (userDB) {
+            // And registered before without google
+            if (userDB.google === false) {
+                return res.status(400).json({
+                    ok: false,
+                    err: {
+                        message: 'User already exists. Log in with your email and password'
+                    }
+                });
+            } else { // If he loged in with google we just renew the token
+                let token = jwt.sign({
+                    user: userDB
+                }, process.env.SEED, { expiresIn: process.env.TOKEN_EXPIRATION });
 
-    res.json({
-        user: googleUser
+                return res.json({
+                    ok: true,
+                    user: userDB,
+                    token
+                });
+            }
+        } else { // If the user doesnt exists we create it
+            let user = new User();
+
+            user.name = googleUser.name;
+            user.email = googleUser.email;
+            user.img = googleUser.img;
+            user.google = true;
+            user.password = 'salchipapa';
+
+            user.save((err, userDB) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        err
+                    });
+                }
+                let token = jwt.sign({
+                    user: userDB
+                }, process.env.SEED, { expiresIn: process.env.TOKEN_EXPIRATION });
+
+                return res.json({
+                    ok: true,
+                    user: userDB,
+                    token
+                });
+            });
+        }
     });
+
 
 });
 
