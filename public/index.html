@@ -7,12 +7,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Google Sign-In Demo</title>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+    <meta name="google-signin-client_id" content="638544373364-609p35tee1v00j2d46og3k298netci7g.apps.googleusercontent.com">
 </head>
 
 <body>
     <div class="g-signin2" data-onsuccess="onSignIn"></div>
-    <a href="#" onclick="signOut();">Sign out</a>
+    <a href="#" onclick="signOut();">Sign out</a><br>
+    <a href="https://documenter.getpostman.com/view/3105260/RzfnjmRx#bf9bbc2a-9d29-45d3-b2cc-cbcce733b2d8">Documentation</a>
     <script>
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();
@@ -30,6 +31,8 @@
             console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 
             var id_token = googleUser.getAuthResponse().id_token;
+
+            console.log(id_token);
 
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/google');
