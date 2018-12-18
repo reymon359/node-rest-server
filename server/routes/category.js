@@ -10,6 +10,8 @@ let { verificateToken, verificateAdmin_Role } = require('../middlewares/authenti
 // Return all the categories
 app.get('/category', verificateToken, (req, res) => {
     Category.find({})
+        .sort('description')
+        .populate('user', 'name email')
         .exec((err, categories) => {
             if (err) {
                 return res.status(500).json({
