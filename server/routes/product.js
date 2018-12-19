@@ -2,7 +2,7 @@ const express = require('express');
 let app = express();
 
 let Product = require('../models/product');
-let { verificateToken, verificateAdmin_Role } = require('../middlewares/authentication');
+let { verificateToken } = require('../middlewares/authentication');
 
 // Return all the products
 app.get('/products', verificateToken, (req, res) => {
@@ -57,7 +57,26 @@ app.get('/products/:id', verificateToken, (req, res) => {
 
 
 });
-
+// Search a product
+app.get('/products/search/:term', verificateToken, (req, res) => {
+    let term = req.params.term;
+    // I will use regular expresion for the search term
+    let regex = new RegExp(term, 'i');
+    Product.find({ name: regex })
+        .populate('category', 'name')
+        .exec((err, products) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+            res.json({
+                ok: true,
+                products
+            });
+        });
+});
 // Create a new product
 app.post('/products', verificateToken, (req, res) => {
     let body = req.body;
@@ -76,14 +95,11 @@ app.post('/products', verificateToken, (req, res) => {
                 err
             });
         }
-        if (!productDB) {
-            return res.status(400).json({
-                ok: false,
-                err: {
-                    message: 'The product doesnt exist'
-                }
-            });
-        }
+        res.json({
+            ok: true,
+            product: productDB,
+            message: 'Product created'
+        });
     });
 });
 
