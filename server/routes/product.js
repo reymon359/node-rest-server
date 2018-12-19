@@ -129,7 +129,37 @@ app.put('/products/:id', verificateToken, (req, res) => {
 
 // Delete a product
 app.delete('/products/:id', verificateToken, (req, res) => {
-
+    let id = req.params.id;
+    Product.findById(id, (err, productDB) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            });
+        }
+        if (!productDB) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'that product ID doesnt exist'
+                }
+            });
+        }
+        productDB.avaliable = false;
+        productDB.save((err, productDeleted) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+            res.json({
+                ok: true,
+                product: productDeleted,
+                message: 'Product deleted'
+            });
+        });
+    });
 });
 
 
