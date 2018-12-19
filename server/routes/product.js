@@ -5,12 +5,56 @@ let Product = require('../models/product');
 let { verificateToken, verificateAdmin_Role } = require('../middlewares/authentication');
 
 // Return all the products
-app.get('/products', (req, res) => {
-
+app.get('/products', verificateToken, (req, res) => {
+    let from = req.query.from || 0;
+    from = Number(from);
+    Product.find({ avaliable: true })
+        .skip(from)
+        .limit(5)
+        .populate('user', 'name email')
+        .populate('category', 'description')
+        .exec((err, products) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+            res.json({
+                ok: true,
+                products
+            });
+        });
 });
 
 // Return a product by the id
-app.get('/products/:id', (req, res) => {
+app.get('/products/:id', verificateToken, (req, res) => {
+    let id = req.params.id;
+    Product.findById(id)
+        .populate('user', 'name email')
+        .populate('category', 'description')
+        .exec((err, productDB) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+            if (!productDB) {
+                return res.status(400).json({
+                    ok: false,
+                    err: {
+                        message: 'that product ID doesnt exist'
+                    }
+                });
+            }
+            res.json({
+                ok: true,
+                product: productDB
+            });
+        });
+
+
 
 });
 
@@ -36,7 +80,7 @@ app.post('/products', verificateToken, (req, res) => {
             return res.status(400).json({
                 ok: false,
                 err: {
-                    message: 'The product doesnt exists'
+                    message: 'The product doesnt exist'
                 }
             });
         }
@@ -84,7 +128,7 @@ app.put('/products/:id', verificateToken, (req, res) => {
 });
 
 // Delete a product
-app.delete('/products/:id', (req, res) => {
+app.delete('/products/:id', verificateToken, (req, res) => {
 
 });
 
