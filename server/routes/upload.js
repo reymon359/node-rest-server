@@ -45,10 +45,6 @@ app.put('/upload/:type/:id', function(req, res) {
     // Allowed extensions for the file
     let validExtensions = ['png', 'jpg', 'gif', 'jpeg', 'PNG', 'JPG', 'GIF', 'JPEG'];
 
-    console.log(extension);
-
-    console.log(validExtensions.indexOf(extension));
-
     // Check if the extension is valid
     if (validExtensions.indexOf(extension) < 0) {
         return res.status(400).json({
@@ -69,11 +65,42 @@ app.put('/upload/:type/:id', function(req, res) {
                 ok: false,
                 err
             });
-        res.json({
-            ok: true,
-            message: 'File uploaded correctly'
-        });
+        // Here the image was uploaded correctly
+        // Now we are going to assign it to an user
+        userImage(id, res, fileName);
     });
 });
+
+// Assign the image uploaded to an user
+function userImage(id, res, fileName) {
+    User.findById(id, (err, userDB) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            });
+        }
+
+        if (!userDB) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'The user does not exist'
+                }
+            });
+        }
+        userDB.img = fileName;
+        userDB.save((err, userSaved) => {
+            res.json({
+                ok: true,
+                user: userSaved,
+                img: fileName
+            });
+        });
+    });
+}
+
+
+
 
 module.exports = app;
