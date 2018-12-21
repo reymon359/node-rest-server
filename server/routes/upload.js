@@ -4,6 +4,9 @@ const app = express();
 
 const User = require('../models/user');
 
+const fs = require('fs');
+const path = require('path');
+
 // default options
 app.use(fileUpload());
 // When we call app.use(fileUpload());  all the files go to req.files
@@ -75,6 +78,7 @@ app.put('/upload/:type/:id', function(req, res) {
 function userImage(id, res, fileName) {
     User.findById(id, (err, userDB) => {
         if (err) {
+            deleteFile(fileName, 'users');
             return res.status(500).json({
                 ok: false,
                 err
@@ -82,6 +86,7 @@ function userImage(id, res, fileName) {
         }
 
         if (!userDB) {
+            deleteFile(fileName, 'users');
             return res.status(400).json({
                 ok: false,
                 err: {
@@ -89,6 +94,15 @@ function userImage(id, res, fileName) {
                 }
             });
         }
+
+        // // Check if the user already has an image
+        // let imagePath = path.resolve(__dirname, `../../uploads/users/${userDB.img}`);
+        // if (fs.existsSync(imagePath)) {
+        //     fs.unlinkSync(imagePath);
+        // }
+
+        deleteFile(userDB.img, 'users');
+
         userDB.img = fileName;
         userDB.save((err, userSaved) => {
             res.json({
@@ -100,6 +114,15 @@ function userImage(id, res, fileName) {
     });
 }
 
+function productImage(id, res, fileName) {}
+
+function deleteFile(imageName, type) {
+    // Check if the user already has an image
+    let imagePath = path.resolve(__dirname, `../../uploads/${type}/${imageName}`);
+    if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+    }
+}
 
 
 
