@@ -27,7 +27,7 @@ let verificateToken = (req, res, next) => { // next to continue program executio
 // ============================
 //  Admin Role verification
 // ============================
-let verificateAdmin_Role = (req, res, next) => { // next to continue program execution
+let verificateAdmin_Role = (req, res, next) => {
 
     let user = req.user;
     if (user.role === 'ADMIN_ROLE') {
@@ -42,8 +42,28 @@ let verificateAdmin_Role = (req, res, next) => { // next to continue program exe
     }
 };
 
+// ============================
+//  Image Token verification
+// ============================
+let verificateTokenImg = (req, res, next) => {
+    let token = req.query.token;
+    jwt.verify(token, process.env.SEED, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({
+                ok: false,
+                err: {
+                    message: 'Token not valid'
+                }
+            });
+        }
+        req.user = decoded.user;
+        next();
+    });
+};
+
 
 module.exports = {
     verificateToken,
-    verificateAdmin_Role
+    verificateAdmin_Role,
+    verificateTokenImg
 }
