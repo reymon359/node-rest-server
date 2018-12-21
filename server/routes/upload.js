@@ -3,6 +3,7 @@ const fileUpload = require('express-fileupload');
 const app = express();
 
 const User = require('../models/user');
+const Product = require('../models/product');
 
 const fs = require('fs');
 const path = require('path');
@@ -69,8 +70,12 @@ app.put('/upload/:type/:id', function(req, res) {
                 err
             });
         // Here the image was uploaded correctly
-        // Now we are going to assign it to an user
-        userImage(id, res, fileName);
+        // Now we are going to assign it to an user or product
+        if (type === 'users') {
+            userImage(id, res, fileName);
+        } else {
+            productImage(id, res, fileName);
+        }
     });
 });
 
@@ -95,12 +100,6 @@ function userImage(id, res, fileName) {
             });
         }
 
-        // // Check if the user already has an image
-        // let imagePath = path.resolve(__dirname, `../../uploads/users/${userDB.img}`);
-        // if (fs.existsSync(imagePath)) {
-        //     fs.unlinkSync(imagePath);
-        // }
-
         deleteFile(userDB.img, 'users');
 
         userDB.img = fileName;
@@ -114,7 +113,36 @@ function userImage(id, res, fileName) {
     });
 }
 
-function productImage(id, res, fileName) {}
+function productImage(id, res, fileName) {
+    Product.findById(id, (err, productDB) => {
+        if (err) {
+            deleteFile(fileName, 'products');
+            return res.status(500).json({
+                ok: false,
+                err
+            });
+        }
+        if (!productDB) {
+            deleteFile(fileName, 'products');
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'The product does not exist'
+                }
+            });
+        }
+        deleteFile(productDB.img, 'products');
+        productDB.img = fileName;
+        productDB.save((err, productSaved) => {
+            res.json({
+                ok: true,
+                product: productSaved,
+                img: fileName
+            });
+        });
+    });
+
+}
 
 function deleteFile(imageName, type) {
     // Check if the user already has an image
