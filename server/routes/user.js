@@ -33,7 +33,6 @@ app.get('/user', verificateToken, (req, res) => {
                     quantity
                 });
             });
-
         });
 })
 app.post('/user', [verificateToken, verificateAdmin_Role], function(req, res) {

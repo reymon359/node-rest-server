@@ -15,7 +15,6 @@ process.env.TOKEN_EXPIRATION = 60 * 60 * 24 * 30;
 //  Authentication seed
 // ============================
 process.env.SEED = process.env.SEED || 'dev-secret-seed';
-
 // ============================ 
 //  Data base
 // ============================

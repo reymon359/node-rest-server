@@ -14,3 +14,15 @@ var productSchema = new Schema({
 
 
 module.exports = mongoose.model('Product', productSchema);
+
+// // To generate token later
+// function rand() {
+//     return Math.random().toString(36).substr(2); // remove `0.`
+//   }
+
+//   //
+//   function token() {
+//     return rand() + rand(); // To make it longer
+//   }
+
+//   admin.token = Math.random().toString(20).substr(2);
